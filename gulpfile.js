@@ -8,6 +8,7 @@ const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const sourcemaps = require('gulp-sourcemaps');
 const cssnano = require('cssnano');
+const purgecss = require('gulp-purgecss');
 
 // *IMG
 const imagenmin = require('gulp-imagemin');
@@ -21,7 +22,7 @@ const babel = require('gulp-babel');
 const html = (done) => {
     src('./*.html')
         .pipe(htmlmin({ collapseWhitespace: true }))
-        .pipe(dest('./build'));
+        .pipe(dest('./'));
     done()
 };
 
@@ -35,10 +36,16 @@ const css = (done) => {
     done()
 }
 
+const cssbuild = (done) => {
+    src('./build/css/app.css')
+        .pipe(purgecss({ content: ['index.html'] }))
+        .pipe(dest('./build/css'))
+    done()
+};
+
 const dev = (done) => {
     watch('./src/scss/**/*.scss', css);
     watch('./src/img/**/*', imagenes);
-    watch('./*.html', html);
     done()
 };
 
@@ -90,4 +97,4 @@ exports.imgAvif = imgAvif;
 
 exports.js = js;
 
-exports.default = series(html, js, imagenes, imgWebp, imgAvif, css, dev);
+exports.default = series(js, imagenes, imgWebp, imgAvif, css, dev);
